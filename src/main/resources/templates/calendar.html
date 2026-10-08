@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments :: head('Calendar')}"></head>
+<body>
+<header th:replace="~{fragments :: nav('calendar')}"></header>
+<main>
+  <h1>Calendar</h1>
+  <p class="subtitle">Tap a day to log how it went.</p>
+
+  <div class="card">
+    <div class="cal-head">
+      <a class="btn" th:href="@{/calendar(month=${prevMonth})}" aria-label="Previous month">&larr;</a>
+      <h2 th:text="${#temporals.format(month.atDay(1), 'MMMM yyyy')}">Month</h2>
+      <a class="btn" th:href="@{/calendar(month=${nextMonth})}" aria-label="Next month">&rarr;</a>
+    </div>
+
+    <div class="calendar">
+      <div class="cal-dow">Mon</div><div class="cal-dow">Tue</div><div class="cal-dow">Wed</div>
+      <div class="cal-dow">Thu</div><div class="cal-dow">Fri</div><div class="cal-dow">Sat</div><div class="cal-dow">Sun</div>
+      <th:block th:each="week : ${weeks}">
+        <th:block th:each="day : ${week}">
+          <a th:if="${!day.future}" class="cal-day"
+             th:href="@{/logs/day(date=${day.date})}"
+             th:classappend="${!day.inMonth ? 'outside' : ''} + ' ' + ${day.kind} + ' ' + ${day.today ? 'today' : ''}"
+             th:title="${day.kind == '' ? '' : day.kind}">
+            <span th:text="${day.date.dayOfMonth}">1</span>
+            <span class="dot" th:if="${day.logged}"></span>
+          </a>
+          <div th:if="${day.future}" class="cal-day future"
+               th:classappend="${!day.inMonth ? 'outside' : ''} + ' ' + ${day.kind}"
+               th:title="${day.kind == '' ? '' : day.kind}">
+            <span th:text="${day.date.dayOfMonth}">1</span>
+          </div>
+        </th:block>
+      </th:block>
+    </div>
+
+    <div class="legend">
+      <span class="l-period">Period</span>
+      <span class="l-predicted">Predicted period</span>
+      <span class="l-fertile">Fertile window (estimate)</span>
+      <span class="l-ovulation">Ovulation (estimate)</span>
+    </div>
+  </div>
+
+  <div class="card" th:unless="${prediction}">
+    <p class="muted" style="margin:0">Predictions appear once you've logged at least two periods.
+      <a th:href="@{/cycles/new}">Add a past period</a></p>
+  </div>
+</main>
+<footer th:replace="~{fragments :: footer}"></footer>
+</body>
+</html>

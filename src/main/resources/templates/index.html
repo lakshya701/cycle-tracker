@@ -8,30 +8,76 @@
   <p class="subtitle" th:text="${#temporals.format(today, 'EEEE, d MMMM yyyy')}">Today</p>
   <div th:replace="~{fragments :: flash}"></div>
 
-  <div class="grid">
+  <div th:unless="${latest}" class="card">
+    <h2>Welcome!</h2>
+    <p class="muted">Start by logging your most recent periods. With two or more, the app can predict your next one —
+      and the more you log, the better it gets.</p>
+    <div class="row">
+      <form class="inline" th:action="@{/cycles/start-today}" method="post">
+        <button class="btn-primary" type="submit">My period started today</button>
+      </form>
+      <a class="btn" th:href="@{/cycles/new}">Add a past period</a>
+    </div>
+  </div>
+
+  <div class="grid" th:if="${latest}">
     <div class="card">
       <div class="stat-label">Cycle day</div>
-      <div th:if="${latest}">
-        <div class="big-day" th:text="${cycleDay}">1</div>
-        <div class="stat-sub" th:text="'Since ' + ${#temporals.format(latest.startDate, 'd MMM')}"></div>
+      <div class="big-day" th:text="${cycleDay}">1</div>
+      <div class="stat-sub">
+        <span th:if="${latest.ongoing}">Period in progress</span>
+        <span th:unless="${latest.ongoing}" th:text="'Period started ' + ${#temporals.format(latest.startDate, 'd MMM')}"></span>
       </div>
-      <p th:unless="${latest}" class="muted">Log your most recent period to get started.</p>
     </div>
 
     <div class="card">
-      <div class="stat-label">Quick actions</div>
-      <div class="row" style="margin-top:10px">
-        <form th:if="${latest == null or !latest.ongoing}" class="inline" th:action="@{/cycles/start-today}" method="post">
-          <button class="btn-primary" type="submit">Period started today</button>
-        </form>
-        <form th:if="${latest != null and latest.ongoing}" class="inline" th:action="@{/cycles/{id}/end-today(id=${latest.id})}" method="post">
-          <button class="btn-primary" type="submit">Period ended today</button>
-        </form>
-        <a class="btn" th:href="@{/logs/day}" th:text="${todayLog} ? 'Edit today\'s log' : 'Log how today went'">Log today</a>
-        <a class="btn" th:href="@{/cycles/new}">Add a past period</a>
-      </div>
+      <div class="stat-label">Next period</div>
+      <th:block th:if="${prediction}">
+        <th:block th:if="${daysLate > 0}">
+          <div class="stat-value" th:text="${daysLate} + (${daysLate == 1} ? ' day late' : ' days late')"></div>
+          <div class="stat-sub">Later than the likely range. Cycles can vary — log it when it starts.</div>
+        </th:block>
+        <th:block th:unless="${daysLate > 0}">
+          <div class="stat-value" th:if="${daysUntil > 0}" th:text="'in ' + ${daysUntil} + (${daysUntil == 1} ? ' day' : ' days')"></div>
+          <div class="stat-value" th:if="${daysUntil <= 0}">Any day now</div>
+          <div class="stat-sub" th:text="'Likely ' + ${#temporals.format(prediction.earliest, 'd MMM')} + ' – ' + ${#temporals.format(prediction.latest, 'd MMM')}"></div>
+        </th:block>
+      </th:block>
+      <p th:unless="${prediction}" class="muted">Log one more period to see a prediction.</p>
+    </div>
+
+    <div class="card" th:if="${prediction}">
+      <div class="stat-label">Fertile window (estimate)</div>
+      <div class="stat-value" style="font-size:1.25rem;margin-top:4px"
+           th:text="${#temporals.format(prediction.fertileStart, 'd MMM')} + ' – ' + ${#temporals.format(prediction.fertileEnd, 'd MMM')}"></div>
+      <div class="stat-sub" th:if="${inFertileWindow}">You're in the estimated window now.</div>
+      <div class="stat-sub" th:unless="${inFertileWindow}"
+           th:text="'Estimated ovulation ' + ${#temporals.format(prediction.ovulation, 'd MMM')}"></div>
     </div>
   </div>
+
+  <div class="card" th:if="${latest}">
+    <div class="stat-label">Quick actions</div>
+    <div class="row" style="margin-top:10px">
+      <form th:if="${!latest.ongoing}" class="inline" th:action="@{/cycles/start-today}" method="post">
+        <button class="btn-primary" type="submit">Period started today</button>
+      </form>
+      <form th:if="${latest.ongoing}" class="inline" th:action="@{/cycles/{id}/end-today(id=${latest.id})}" method="post">
+        <button class="btn-primary" type="submit">Period ended today</button>
+      </form>
+      <a class="btn" th:href="@{/logs/day}" th:text="${todayLog} ? 'Edit today\'s log' : 'Log how today went'">Log today</a>
+      <a class="btn" th:href="@{/calendar}">Open calendar</a>
+    </div>
+  </div>
+
+  <div class="alert alert-warn" th:each="note : ${healthNotes}">
+    <strong th:text="${note.title}"></strong> — <span th:text="${note.message}"></span>
+  </div>
+
+  <p class="disclaimer" th:if="${prediction}">
+    Prediction method: <strong th:text="${prediction.method}"></strong>, based on
+    <span th:text="${prediction.cyclesUsed}"></span> past cycle(s). <a th:href="@{/accuracy}">How accurate is it?</a>
+  </p>
 </main>
 <footer th:replace="~{fragments :: footer}"></footer>
 </body>

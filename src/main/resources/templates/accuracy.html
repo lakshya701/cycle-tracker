@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments :: head('Prediction accuracy')}"></head>
+<body>
+<header th:replace="~{fragments :: nav('insights')}"></header>
+<main>
+  <h1>How accurate are the predictions?</h1>
+  <p class="subtitle">The app tries four methods on your own history and uses whichever has been most accurate for you.</p>
+
+  <div class="card" th:if="${prediction == null or prediction.evaluations.isEmpty()}">
+    <p class="muted" style="margin:0">
+      Log at least four periods to compare methods. Until then, predictions use the average of your cycles.
+    </p>
+  </div>
+
+  <div class="card" th:if="${prediction != null and !prediction.evaluations.isEmpty()}">
+    <h2>Results on your history</h2>
+    <div class="table-wrap">
+      <table>
+        <thead>
+        <tr><th>Method</th><th class="hide-sm">How it works</th><th>Average error</th><th></th></tr>
+        </thead>
+        <tbody>
+        <tr th:each="s : ${prediction.evaluations}">
+          <td><strong th:text="${s.name}"></strong></td>
+          <td class="hide-sm muted small" th:text="${s.description}"></td>
+          <td th:text="${#numbers.formatDecimal(s.meanAbsoluteError, 1, 1)} + ' days'"></td>
+          <td><span class="tag" th:if="${s.chosen}">in use</span></td>
+        </tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="small muted" style="margin-bottom:0" th:text="'Each method was tested on ' + ${prediction.evaluations[0].cyclesTested} + ' of your past cycles.'"></p>
+  </div>
+
+  <div class="card">
+    <h2>How the test works</h2>
+    <p class="muted" style="margin-top:0">
+      For every cycle you've logged, each method predicts its length using <em>only the cycles before it</em> —
+      just as if it were predicting the future at that time. We then measure how many days off it was.
+      The average of those errors is the <strong>mean absolute error</strong>; lower is better.
+    </p>
+    <p class="muted" style="margin-bottom:0">
+      Testing on data a method hasn't seen avoids fooling ourselves: a method can look perfect on data it has
+      already been fitted to, but what matters is how well it predicts the next cycle.
+    </p>
+  </div>
+</main>
+<footer th:replace="~{fragments :: footer}"></footer>
+</body>
+</html>
