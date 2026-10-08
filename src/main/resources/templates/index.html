@@ -1,13 +1,38 @@
 <!doctype html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
-<head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Cycle Tracker</title>
-</head>
+<head th:replace="~{fragments :: head('Today')}"></head>
 <body>
-  <h1>Cycle Tracker</h1>
-  <p>The app is running. Next step: build the logging form (see the Day 1–2 issue on GitHub).</p>
-  <p><small>Predictions are estimates only and must not be used for contraception.</small></p>
+<header th:replace="~{fragments :: nav('home')}"></header>
+<main>
+  <h1 th:text="'Hi, ' + ${user.displayName}">Hi</h1>
+  <p class="subtitle" th:text="${#temporals.format(today, 'EEEE, d MMMM yyyy')}">Today</p>
+  <div th:replace="~{fragments :: flash}"></div>
+
+  <div class="grid">
+    <div class="card">
+      <div class="stat-label">Cycle day</div>
+      <div th:if="${latest}">
+        <div class="big-day" th:text="${cycleDay}">1</div>
+        <div class="stat-sub" th:text="'Since ' + ${#temporals.format(latest.startDate, 'd MMM')}"></div>
+      </div>
+      <p th:unless="${latest}" class="muted">Log your most recent period to get started.</p>
+    </div>
+
+    <div class="card">
+      <div class="stat-label">Quick actions</div>
+      <div class="row" style="margin-top:10px">
+        <form th:if="${latest == null or !latest.ongoing}" class="inline" th:action="@{/cycles/start-today}" method="post">
+          <button class="btn-primary" type="submit">Period started today</button>
+        </form>
+        <form th:if="${latest != null and latest.ongoing}" class="inline" th:action="@{/cycles/{id}/end-today(id=${latest.id})}" method="post">
+          <button class="btn-primary" type="submit">Period ended today</button>
+        </form>
+        <a class="btn" th:href="@{/logs/day}" th:text="${todayLog} ? 'Edit today\'s log' : 'Log how today went'">Log today</a>
+        <a class="btn" th:href="@{/cycles/new}">Add a past period</a>
+      </div>
+    </div>
+  </div>
+</main>
+<footer th:replace="~{fragments :: footer}"></footer>
 </body>
 </html>

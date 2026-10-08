@@ -1,0 +1,37 @@
+<!doctype html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments :: head(${editing} ? 'Edit period' : 'Add period')}"></head>
+<body>
+<header th:replace="~{fragments :: nav('cycles')}"></header>
+<main class="narrow">
+  <h1 th:text="${editing} ? 'Edit period' : 'Add period'">Add period</h1>
+  <p class="subtitle">Leave the end date empty if the period hasn't finished yet.</p>
+
+  <div class="card">
+    <form th:action="${editing} ? @{/cycles/{id}(id=${cycleId})} : @{/cycles}" th:object="${form}" method="post" novalidate>
+      <label for="startDate">First day</label>
+      <input type="date" id="startDate" th:field="*{startDate}" th:max="${#temporals.createToday()}" required>
+      <div class="field-error" th:if="${#fields.hasErrors('startDate')}" th:errors="*{startDate}"></div>
+
+      <label for="endDate">Last day <span class="muted small">(optional)</span></label>
+      <input type="date" id="endDate" th:field="*{endDate}" th:max="${#temporals.createToday()}">
+      <div class="field-error" th:if="${#fields.hasErrors('endDate')}" th:errors="*{endDate}"></div>
+
+      <label for="notes">Notes <span class="muted small">(optional)</span></label>
+      <textarea id="notes" th:field="*{notes}" maxlength="500"></textarea>
+
+      <div class="form-actions">
+        <button class="btn-primary" type="submit">Save</button>
+        <a class="btn" th:href="@{/cycles}">Cancel</a>
+      </div>
+    </form>
+  </div>
+
+  <form th:if="${editing}" th:action="@{/cycles/{id}/delete(id=${cycleId})}" method="post"
+        onsubmit="return confirm('Delete this period? This can\'t be undone.')">
+    <button class="btn-danger" type="submit">Delete this period</button>
+  </form>
+</main>
+<footer th:replace="~{fragments :: footer}"></footer>
+</body>
+</html>

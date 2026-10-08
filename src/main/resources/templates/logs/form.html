@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments :: head('Log a day')}"></head>
+<body>
+<header th:replace="~{fragments :: nav('logs')}"></header>
+<main class="narrow">
+  <h1>How was the day?</h1>
+  <p class="subtitle">Everything is optional — log as much or as little as you like.</p>
+
+  <div class="card">
+    <form th:action="@{/logs}" th:object="${form}" method="post" novalidate>
+      <label for="date">Date</label>
+      <input type="date" id="date" th:field="*{date}" th:max="${#temporals.createToday()}" required
+             onchange="location.href='?date=' + this.value">
+      <div class="field-error" th:if="${#fields.hasErrors('date')}" th:errors="*{date}"></div>
+
+      <label>Flow</label>
+      <div class="chips">
+        <label class="chip" th:each="f : ${flows}">
+          <input type="radio" th:field="*{flow}" th:value="${f}"><span th:text="${f.label}"></span>
+        </label>
+      </div>
+
+      <label>Symptoms</label>
+      <div class="chips">
+        <label class="chip" th:each="s : ${allSymptoms}">
+          <input type="checkbox" th:field="*{symptoms}" th:value="${s}"><span th:text="${s.label}"></span>
+        </label>
+      </div>
+
+      <label>Mood</label>
+      <div class="chips">
+        <label class="chip" th:each="m : ${moods}">
+          <input type="radio" th:field="*{mood}" th:value="${m}"><span th:text="${m.label}"></span>
+        </label>
+      </div>
+
+      <label for="notes">Notes</label>
+      <textarea id="notes" th:field="*{notes}" maxlength="500"></textarea>
+
+      <div class="form-actions">
+        <button class="btn-primary" type="submit">Save</button>
+        <a class="btn" th:href="@{/}">Cancel</a>
+      </div>
+    </form>
+  </div>
+</main>
+<footer th:replace="~{fragments :: footer}"></footer>
+</body>
+</html>

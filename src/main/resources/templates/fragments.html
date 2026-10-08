@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<!-- Shared page pieces. Pages include them with th:replace="~{fragments :: name}". -->
+
+<head th:fragment="head(title)">
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#b23a6f">
+  <title th:text="${title} + ' · Cycle Tracker'">Cycle Tracker</title>
+  <link rel="stylesheet" th:href="@{/css/app.css}">
+  <link rel="manifest" th:href="@{/manifest.json}">
+  <link rel="icon" th:href="@{/icons/icon.svg}" type="image/svg+xml">
+  <link rel="apple-touch-icon" th:href="@{/icons/icon-192.png}">
+</head>
+
+<header th:fragment="nav(active)" class="topbar">
+  <div class="topbar-inner">
+    <a class="brand" th:href="@{/}"><span class="brand-dot"></span>Cycle Tracker</a>
+    <nav class="nav">
+      <a th:href="@{/}" th:classappend="${active == 'home'} ? 'active'">Today</a>
+      <a th:href="@{/calendar}" th:classappend="${active == 'calendar'} ? 'active'">Calendar</a>
+      <a th:href="@{/cycles}" th:classappend="${active == 'cycles'} ? 'active'">Periods</a>
+      <a th:href="@{/logs}" th:classappend="${active == 'logs'} ? 'active'">Daily logs</a>
+      <a th:href="@{/insights}" th:classappend="${active == 'insights'} ? 'active'">Insights</a>
+      <a th:href="@{/account}" th:classappend="${active == 'account'} ? 'active'">Account</a>
+    </nav>
+    <form class="logout" th:action="@{/logout}" method="post">
+      <button type="submit">Log out</button>
+    </form>
+  </div>
+</header>
+
+<div th:fragment="flash">
+  <div class="alert alert-ok" th:if="${message}" th:text="${message}" role="status"></div>
+  <div class="alert alert-error" th:if="${error}" th:text="${error}" role="alert"></div>
+</div>
+
+<footer th:fragment="footer" class="site">
+  Predictions are estimates based on past cycles. They are not medical advice and must not be relied on for contraception.
+  <script th:src="@{/js/register-sw.js}" defer></script>
+</footer>
+
+</html>

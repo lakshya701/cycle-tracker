@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments :: head('Create account')}"></head>
+<body>
+<main class="narrow">
+  <div style="text-align:center;margin:32px 0 24px">
+    <div class="brand" style="justify-content:center;font-size:1.5rem"><span class="brand-dot"></span>Cycle Tracker</div>
+    <p class="muted">Create your private account.</p>
+  </div>
+
+  <div class="card">
+    <form th:action="@{/signup}" th:object="${form}" method="post" novalidate>
+      <label for="displayName">Your name</label>
+      <input type="text" id="displayName" th:field="*{displayName}" autocomplete="given-name" required>
+      <div class="field-error" th:if="${#fields.hasErrors('displayName')}" th:errors="*{displayName}"></div>
+
+      <label for="email">Email</label>
+      <input type="email" id="email" th:field="*{email}" autocomplete="email" required>
+      <div class="field-error" th:if="${#fields.hasErrors('email')}" th:errors="*{email}"></div>
+
+      <label for="password">Password</label>
+      <input type="password" id="password" th:field="*{password}" autocomplete="new-password" required>
+      <div class="hint">At least 8 characters.</div>
+      <div class="field-error" th:if="${#fields.hasErrors('password')}" th:errors="*{password}"></div>
+
+      <div class="form-actions">
+        <button class="btn-primary" type="submit" style="width:100%;justify-content:center">Create account</button>
+      </div>
+    </form>
+  </div>
+  <p class="small muted" style="text-align:center">Your data is only visible to you. You can export or delete it at any time.</p>
+  <p class="muted" style="text-align:center">Already have an account? <a th:href="@{/login}">Log in</a></p>
+</main>
+<footer th:replace="~{fragments :: footer}"></footer>
+</body>
+</html>

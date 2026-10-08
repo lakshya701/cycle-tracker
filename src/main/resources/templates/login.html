@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments :: head('Log in')}"></head>
+<body>
+<main class="narrow">
+  <div style="text-align:center;margin:32px 0 24px">
+    <div class="brand" style="justify-content:center;font-size:1.5rem"><span class="brand-dot"></span>Cycle Tracker</div>
+    <p class="muted">A private place to track your cycle.</p>
+  </div>
+
+  <div class="alert alert-ok" th:if="${param.registered}">Account created — you can log in now.</div>
+  <div class="alert alert-ok" th:if="${param.logout}">You've been logged out.</div>
+  <div class="alert alert-ok" th:if="${param.deleted}">Your account and all your data have been deleted.</div>
+  <div class="alert alert-error" th:if="${param.error}">Wrong email or password.</div>
+
+  <div class="card">
+    <form th:action="@{/login}" method="post">
+      <label for="email">Email</label>
+      <input type="email" id="email" name="email" autocomplete="username" required autofocus>
+      <label for="password">Password</label>
+      <input type="password" id="password" name="password" autocomplete="current-password" required>
+      <div class="form-actions">
+        <button class="btn-primary" type="submit" style="width:100%;justify-content:center">Log in</button>
+      </div>
+    </form>
+  </div>
+
+  <div class="card" th:if="${demoEnabled}">
+    <strong>Just looking?</strong>
+    <p class="small muted" style="margin:6px 0 12px">Try the demo account. It's filled with generated sample data — no real person's data.</p>
+    <form th:action="@{/login}" method="post">
+      <input type="hidden" name="email" value="demo@example.com">
+      <input type="hidden" name="password" value="demo-password">
+      <button type="submit">Open the demo</button>
+    </form>
+  </div>
+
+  <p class="muted" style="text-align:center">New here? <a th:href="@{/signup}">Create an account</a></p>
+</main>
+<footer th:replace="~{fragments :: footer}"></footer>
+</body>
+</html>

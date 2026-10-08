@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments :: head('Periods')}"></head>
+<body>
+<header th:replace="~{fragments :: nav('cycles')}"></header>
+<main>
+  <div class="row">
+    <h1>Periods</h1>
+    <span class="spacer"></span>
+    <a class="btn btn-primary" th:href="@{/cycles/new}">+ Add period</a>
+  </div>
+  <p class="subtitle">Every period you've logged. Cycle length is counted from one period's start to the next.</p>
+  <div th:replace="~{fragments :: flash}"></div>
+
+  <div class="card">
+    <div th:if="${rows.isEmpty()}" class="empty">
+      No periods logged yet. Add your last few periods to unlock predictions.
+    </div>
+    <div class="table-wrap" th:unless="${rows.isEmpty()}">
+      <table>
+        <thead>
+        <tr>
+          <th>Started</th>
+          <th>Ended</th>
+          <th>Period</th>
+          <th>Cycle</th>
+          <th class="hide-sm">Notes</th>
+          <th></th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="row : ${rows}" th:with="c=${row.cycle}">
+          <td th:text="${#temporals.format(c.startDate, 'd MMM yyyy')}"></td>
+          <td>
+            <span th:if="${c.endDate}" th:text="${#temporals.format(c.endDate, 'd MMM yyyy')}"></span>
+            <span th:unless="${c.endDate}" class="tag tag-period">ongoing</span>
+          </td>
+          <td th:text="${c.periodLength} ? ${c.periodLength} + ' days' : '—'"></td>
+          <td th:text="${row.cycleLength} ? ${row.cycleLength} + ' days' : '—'"></td>
+          <td class="hide-sm muted small" th:text="${c.notes}"></td>
+          <td class="actions">
+            <a th:href="@{/cycles/{id}/edit(id=${c.id})}">Edit</a>
+          </td>
+        </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</main>
+<footer th:replace="~{fragments :: footer}"></footer>
+</body>
+</html>
