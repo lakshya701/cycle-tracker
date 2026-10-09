@@ -1,0 +1,11 @@
+# Render Blueprint: deploys the public demo (generated sample data only).
+# https://render.com/docs/blueprint-spec
+services:
+  - type: web
+    name: cycle-tracker-demo
+    runtime: docker
+    plan: free
+    healthCheckPath: /login
+    envVars:
+      - key: SPRING_PROFILES_ACTIVE
+        value: demo
