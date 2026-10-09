@@ -7,7 +7,9 @@ Log periods, symptoms and mood; see a calendar with predicted dates; and get ins
 cycle patterns — with predictions that are **tested against the user's own history** and
 data that stays private by design.
 
-**Live demo:** _coming soon_ — the demo uses generated sample data only.
+### 🔗 [Try the live demo](https://cycle-tracker-demo.onrender.com) — click **Open the demo** on the login page
+
+The demo uses generated sample data only. It runs on Render's free plan, so the first visit after a quiet period can take about a minute to wake up.
 
 > ⚠️ Predictions are estimates based on past cycles. They are **not medical advice** and
 > **must not be relied on for contraception**.
