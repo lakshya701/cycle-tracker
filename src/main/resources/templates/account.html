@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments :: head('Account')}"></head>
+<body>
+<header th:replace="~{fragments :: nav('account')}"></header>
+<main class="narrow">
+  <h1>Account</h1>
+  <p class="subtitle" th:text="${user.email}"></p>
+  <div th:replace="~{fragments :: flash}"></div>
+
+  <div class="card">
+    <h2>Settings</h2>
+    <form th:action="@{/account/settings}" method="post">
+      <label for="displayName">Your name</label>
+      <input type="text" id="displayName" name="displayName" th:value="${user.displayName}" maxlength="60" required>
+
+      <label class="row" style="font-weight:400;margin-top:16px">
+        <input type="checkbox" name="remindersEnabled" value="true" th:checked="${user.remindersEnabled}">
+        Email me 2 days before my next predicted period
+      </label>
+
+      <div class="form-actions">
+        <button class="btn-primary" type="submit" th:disabled="${isDemo}">Save settings</button>
+      </div>
+    </form>
+  </div>
+
+  <div class="card">
+    <h2>Your data</h2>
+    <p class="muted" style="margin-top:0">Download everything you've logged as spreadsheet (CSV) files.</p>
+    <div class="row">
+      <a class="btn" th:href="@{/account/export/cycles.csv}">Download periods</a>
+      <a class="btn" th:href="@{/account/export/logs.csv}">Download daily logs</a>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>Delete account</h2>
+    <p class="muted" style="margin-top:0">Permanently deletes your account and <strong>everything</strong> you've logged.
+      This can't be undone — download your data first if you want to keep it.</p>
+    <form th:action="@{/account/delete}" method="post">
+      <label for="confirm">Type <strong>DELETE</strong> to confirm</label>
+      <input type="text" id="confirm" name="confirm" autocomplete="off" th:disabled="${isDemo}">
+      <div class="form-actions">
+        <button class="btn-danger" type="submit" th:disabled="${isDemo}">Delete my account and data</button>
+      </div>
+    </form>
+  </div>
+</main>
+<footer th:replace="~{fragments :: footer}"></footer>
+</body>
+</html>

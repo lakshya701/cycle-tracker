@@ -1,0 +1,124 @@
+<!doctype html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments :: head('Insights')}"></head>
+<body>
+<header th:replace="~{fragments :: nav('insights')}"></header>
+<main>
+  <h1>Insights</h1>
+  <p class="subtitle">Patterns from what you've logged. <a th:href="@{/accuracy}">How accurate are the predictions?</a></p>
+
+  <div class="card" th:unless="${hasCycleStats}">
+    <p class="muted" style="margin:0">Log at least two periods to see cycle statistics and charts.</p>
+  </div>
+
+  <div class="grid" th:if="${hasCycleStats}">
+    <div class="card">
+      <div class="stat-label">Average cycle</div>
+      <div class="stat-value" th:text="${avgCycle} + ' days'"></div>
+      <div class="stat-sub" th:text="'Range ' + ${shortest} + '–' + ${longest} + ' days'"></div>
+    </div>
+    <div class="card">
+      <div class="stat-label">Variation</div>
+      <div class="stat-value" th:text="'± ' + ${variation} + ' days'"></div>
+      <div class="stat-sub">Standard deviation of cycle length</div>
+    </div>
+    <div class="card">
+      <div class="stat-label">Average period</div>
+      <div class="stat-value" th:text="${avgPeriod} ? ${avgPeriod} + ' days' : '—'"></div>
+      <div class="stat-sub" th:text="${cyclesLogged} + ' periods logged'"></div>
+    </div>
+  </div>
+
+  <div class="card" th:if="${hasCycleStats}">
+    <h2>Cycle length over time</h2>
+    <div class="chart-box"><canvas id="cycleChart" aria-label="Cycle length chart" role="img"></canvas></div>
+    <p class="small muted" style="margin-bottom:0">Shaded band: 21–35 days, the typical range for adults.</p>
+  </div>
+
+  <div class="card" th:if="${!periodLengths.isEmpty()}">
+    <h2>Period length</h2>
+    <div class="chart-box"><canvas id="periodChart" aria-label="Period length chart" role="img"></canvas></div>
+  </div>
+
+  <div class="grid">
+    <div class="card">
+      <h2>Most common symptoms</h2>
+      <p th:if="${topSymptoms.isEmpty()}" class="muted small">No symptoms logged yet.</p>
+      <div th:replace="~{fragments :: bars(${topSymptoms})}"></div>
+    </div>
+    <div class="card">
+      <h2>In the 3 days before a period</h2>
+      <p th:if="${beforePeriod.isEmpty()}" class="muted small">Nothing logged in the days before a period yet.</p>
+      <div th:replace="~{fragments :: bars(${beforePeriod})}"></div>
+    </div>
+    <div class="card">
+      <h2>During your period</h2>
+      <p th:if="${duringPeriod.isEmpty()}" class="muted small">No symptoms logged during a period yet.</p>
+      <div th:replace="~{fragments :: bars(${duringPeriod})}"></div>
+    </div>
+    <div class="card">
+      <h2>Mood</h2>
+      <p th:if="${moods.isEmpty()}" class="muted small">No moods logged yet.</p>
+      <div th:replace="~{fragments :: bars(${moods})}"></div>
+    </div>
+  </div>
+
+</main>
+<footer th:replace="~{fragments :: footer}"></footer>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<script th:inline="javascript">
+  const cycleLabels = /*[[${cycleLabels}]]*/ [];
+  const cycleLengths = /*[[${cycleLengths}]]*/ [];
+  const periodLabels = /*[[${periodLabels}]]*/ [];
+  const periodLengths = /*[[${periodLengths}]]*/ [];
+
+  const css = getComputedStyle(document.documentElement);
+  const color = (name) => css.getPropertyValue(name).trim();
+  Chart.defaults.color = color('--muted');
+  Chart.defaults.borderColor = color('--border');
+  Chart.defaults.font.family = getComputedStyle(document.body).fontFamily;
+
+  const typicalBand = {
+    id: 'typicalBand',
+    beforeDraw(chart) {
+      const { ctx, chartArea, scales: { y } } = chart;
+      if (!chartArea || !chart.config.options.plugins.typicalBand) return;
+      ctx.save();
+      ctx.fillStyle = color('--ok-soft');
+      const top = Math.max(y.getPixelForValue(35), chartArea.top);
+      const bottom = Math.min(y.getPixelForValue(21), chartArea.bottom);
+      ctx.fillRect(chartArea.left, top, chartArea.right - chartArea.left, bottom - top);
+      ctx.restore();
+    }
+  };
+
+  if (document.getElementById('cycleChart')) {
+    new Chart(document.getElementById('cycleChart'), {
+      type: 'line',
+      data: { labels: cycleLabels, datasets: [{
+        label: 'Cycle length (days)', data: cycleLengths, tension: 0.3,
+        borderColor: color('--accent'), backgroundColor: color('--accent'), pointRadius: 4 }] },
+      options: {
+        maintainAspectRatio: false,
+        plugins: { legend: { display: false }, typicalBand: true },
+        scales: { y: { suggestedMin: 18, suggestedMax: 40, title: { display: true, text: 'days' } } }
+      },
+      plugins: [typicalBand]
+    });
+  }
+  if (document.getElementById('periodChart')) {
+    new Chart(document.getElementById('periodChart'), {
+      type: 'bar',
+      data: { labels: periodLabels, datasets: [{
+        label: 'Period length (days)', data: periodLengths, backgroundColor: color('--period'), borderRadius: 4 }] },
+      options: {
+        maintainAspectRatio: false,
+        plugins: { legend: { display: false } },
+        scales: { y: { beginAtZero: true, suggestedMax: 8, ticks: { stepSize: 1 }, title: { display: true, text: 'days' } } }
+      }
+    });
+  }
+</script>
+</body>
+</html>
