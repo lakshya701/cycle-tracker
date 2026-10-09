@@ -63,7 +63,9 @@ class AccountAndInsightsTests {
         mvc.perform(get("/insights").with(user("erin@example.com")))
                 .andExpect(status().isOk())
                 .andExpect(content().string(containsString("Average cycle")))
-                .andExpect(content().string(containsString("Bloating")));
+                .andExpect(content().string(containsString("Bloating")))
+                // The bar keeps its class (colour and height) and gets its width from the data.
+                .andExpect(content().string(containsString("class=\"bar-fill\" style=\"width:100%\"")));
         mvc.perform(get("/insights").with(user("frank@example.com"))).andExpect(status().isOk());
         mvc.perform(get("/account").with(user("erin@example.com"))).andExpect(status().isOk());
     }

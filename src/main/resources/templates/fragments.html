@@ -40,8 +40,8 @@
   <div th:each="item : ${items}" style="margin-bottom:10px">
     <div class="row small"><span th:text="${item.label}"></span><span class="spacer"></span>
       <span class="muted" th:text="${item.count} + (${item.count == 1} ? ' day' : ' days')"></span></div>
-    <div style="height:8px;border-radius:4px;background:var(--accent-soft)">
-      <div style="height:8px;border-radius:4px;background:var(--accent)" th:style="'width:' + ${item.percentOfMax} + '%'"></div>
+    <div class="bar-track">
+      <div class="bar-fill" th:style="'width:' + ${item.percentOfMax} + '%'"></div>
     </div>
   </div>
 </div>

@@ -111,7 +111,8 @@ h2 { font-size: 1.15rem; margin: 0 0 12px; }
   padding: 20px;
   margin-bottom: 16px;
 }
-.grid { display: grid; gap: 16px; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); }
+.grid { display: grid; gap: 16px; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); margin-bottom: 16px; }
+.grid > .card { margin-bottom: 0; }
 .row { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
 .spacer { flex: 1; }
 .muted { color: var(--muted); }
@@ -173,8 +174,8 @@ textarea { min-height: 80px; resize: vertical; }
   user-select: none;
 }
 .chip { margin: 0; font-weight: 400; position: relative; }
-.chip input:checked + span { background: var(--accent-soft); border-color: var(--accent); color: var(--accent); font-weight: 600; }
-.chip input:focus-visible + span { outline: 2px solid var(--accent); outline-offset: 1px; }
+.chip input:checked ~ span { background: var(--accent-soft); border-color: var(--accent); color: var(--accent); font-weight: 600; }
+.chip input:focus-visible ~ span { outline: 2px solid var(--accent); outline-offset: 1px; }
 
 /* ---------- Alerts ---------- */
 .alert { padding: 12px 14px; border-radius: 8px; margin-bottom: 16px; }
@@ -245,12 +246,20 @@ td.actions { text-align: right; white-space: nowrap; }
 .legend .l-ovulation::before { background: var(--fertile-soft); border: 2px solid var(--fertile); }
 
 /* ---------- Charts ---------- */
+.bar-track { height: 8px; border-radius: 4px; background: var(--accent-soft); margin-top: 4px; }
+.bar-fill { height: 8px; border-radius: 4px; background: var(--accent); }
 .chart-box { position: relative; height: 260px; }
 
 /* ---------- Footer ---------- */
 footer.site { text-align: center; color: var(--muted); font-size: 0.8rem; padding: 24px 16px 40px; }
 
 @media (max-width: 600px) {
+  /* Brand and log-out on the first row; the menu becomes one row that scrolls sideways. */
+  .topbar-inner { gap: 8px 12px; padding-bottom: 6px; }
+  .logout { margin-left: auto; }
+  .nav { order: 3; flex: 1 0 100%; flex-wrap: nowrap; overflow-x: auto; scrollbar-width: none; }
+  .nav::-webkit-scrollbar { display: none; }
+  .nav a { white-space: nowrap; }
   h1 { font-size: 1.35rem; }
   .card { padding: 16px; }
   .nav a { padding: 6px 8px; font-size: 0.9rem; }
