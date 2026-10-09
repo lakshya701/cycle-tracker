@@ -53,6 +53,13 @@ body {
 a { color: var(--accent); }
 
 /* ---------- Layout ---------- */
+.demo-banner {
+  background: var(--warn-soft);
+  color: var(--warn);
+  text-align: center;
+  font-size: 0.85rem;
+  padding: 6px 16px;
+}
 .topbar {
   background: var(--card);
   border-bottom: 1px solid var(--border);

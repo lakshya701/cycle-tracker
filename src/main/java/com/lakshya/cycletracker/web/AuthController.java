@@ -40,6 +40,10 @@ public class AuthController {
 
     @PostMapping("/signup")
     public String signup(@Valid @ModelAttribute("form") SignupForm form, BindingResult errors) {
+        // The public demo must never collect real people's health data.
+        if (demoEnabled) {
+            return "redirect:/signup";
+        }
         if (!errors.hasFieldErrors("email") && users.existsByEmailIgnoreCase(form.getEmail().trim())) {
             errors.rejectValue("email", "taken", "An account with this email already exists.");
         }

@@ -8,7 +8,12 @@
     <p class="muted">Create your private account.</p>
   </div>
 
-  <div class="card">
+  <div class="card" th:if="${demoMode}">
+    <p style="margin:0">Sign-up is turned off on this public demo so that nobody enters real health data here.
+      <a th:href="@{/login}">Try the demo account instead</a>.</p>
+  </div>
+
+  <div class="card" th:unless="${demoMode}">
     <form th:action="@{/signup}" th:object="${form}" method="post" novalidate>
       <label for="displayName">Your name</label>
       <input type="text" id="displayName" th:field="*{displayName}" autocomplete="given-name" required>
